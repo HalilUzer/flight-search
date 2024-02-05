@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity(name = "flights")
@@ -20,11 +22,22 @@ public class Flight {
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID flightId;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "arrivalAirportId")
-    private Airport arrivalAirportId;
+    private Airport arrivalAirport;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "DepartureAirportId")
-    private Airport departureAirportId;
+    private Airport departureAirport;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime departureTime;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime arrivalTime;
+
+    @Column
+    private int price;
 }

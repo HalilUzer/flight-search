@@ -1,20 +1,20 @@
 package com.amadeus.flightsearch.Airports.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import com.amadeus.flightsearch.Flights.entities.Flight;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "airports")
-@AllArgsConstructor @Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class Airport {
 
     @Id
@@ -24,4 +24,13 @@ public class Airport {
 
     @Column
     private String city;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "departureAirport")
+    private List<Flight> departureFlights;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "arrivalAirport")
+    private List<Flight> arrivalFlights;
+    public Airport(String city) {
+        this.city = city;
+    }
 }
