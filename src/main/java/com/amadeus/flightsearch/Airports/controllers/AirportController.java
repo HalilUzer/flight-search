@@ -1,6 +1,7 @@
 package com.amadeus.flightsearch.Airports.controllers;
 
-import com.amadeus.flightsearch.Airports.dtos.AirportDto;
+import com.amadeus.flightsearch.Airports.dtos.CreateAirportDto;
+import com.amadeus.flightsearch.Airports.dtos.DeleteAirportDto;
 import com.amadeus.flightsearch.Airports.services.AirportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,12 +21,11 @@ public class AirportController {
     @Operation(summary = "Create a airport")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Airport created"),
-            @ApiResponse(responseCode = "400", description = "Airport already exits")
     })
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createAirport(@Valid @RequestBody AirportDto airportDto) {
-        this.airportService.createAirport(airportDto.city());
+    public void createAirport(@Valid @RequestBody CreateAirportDto createAirportDto) {
+        this.airportService.createAirport(createAirportDto.city());
     }
 
     @Operation(summary = "Delelte a airport")
@@ -36,7 +36,7 @@ public class AirportController {
     })
     @DeleteMapping("")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void deleteAirport(@Valid @RequestBody AirportDto airportDto){
-        this.airportService.deleteAirport(airportDto.city());
+    public void deleteAirport(@Valid @RequestBody DeleteAirportDto deleteAirportDto){
+        this.airportService.deleteAirport(deleteAirportDto.id());
     }
 }

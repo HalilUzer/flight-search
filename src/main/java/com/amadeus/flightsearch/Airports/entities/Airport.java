@@ -1,6 +1,7 @@
 package com.amadeus.flightsearch.Airports.entities;
 
 import com.amadeus.flightsearch.Flights.entities.Flight;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,11 @@ public class Airport {
     @Column
     private String city;
 
+    @JsonIgnoreProperties({"departureFlights"})
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "departureAirport")
     private List<Flight> departureFlights;
 
+    @JsonIgnoreProperties({"arrivalFlights"})
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "arrivalAirport")
     private List<Flight> arrivalFlights;
     public Airport(String city) {

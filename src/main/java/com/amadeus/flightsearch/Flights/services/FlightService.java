@@ -21,10 +21,10 @@ public class FlightService {
 
     public void createFlight(CreateFlightDto createFlightDto) {
         Airport arrivalAirport = airportRepository
-                .findAirportByCity(createFlightDto.arrivalAirportCity())
+                .findById(createFlightDto.arrivalAirportId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Arrival Airport Not Found"));
         Airport departureAirport = airportRepository
-                .findAirportByCity(createFlightDto.departureAirportCity())
+                .findById(createFlightDto.departureAirportId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Departure Airport Not Found"));
 
       if(!createFlightDto.departureTime().isBefore(createFlightDto.arrivalTime())){

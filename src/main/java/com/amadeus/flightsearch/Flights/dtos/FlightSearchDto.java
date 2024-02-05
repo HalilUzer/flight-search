@@ -2,30 +2,26 @@ package com.amadeus.flightsearch.Flights.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-public record CreateFlightDto(
-
-
-        @NotNull
-        UUID departureAirportId,
-        @NotNull
-        UUID arrivalAirportId,
+public record FlightSearchDto(
+        @Future
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+        LocalDateTime returnTime,
 
         @NotNull
         @Future
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime departureTime,
-
         @NotNull
-        @Future
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-        LocalDateTime arrivalTime,
-
+        @NotEmpty
+        String arrivalCity,
         @NotNull
-        int price
+        @NotEmpty
+        String departureCity
+
 ) {
 }
