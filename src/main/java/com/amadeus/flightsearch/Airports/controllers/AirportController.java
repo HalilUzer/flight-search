@@ -2,17 +2,28 @@ package com.amadeus.flightsearch.Airports.controllers;
 
 import com.amadeus.flightsearch.Airports.dtos.CreateAirportDto;
 import com.amadeus.flightsearch.Airports.dtos.DeleteAirportDto;
+import com.amadeus.flightsearch.Airports.dtos.GetAirportsByCityDto;
+import com.amadeus.flightsearch.Airports.dtos.UpdateAirportDto;
+import com.amadeus.flightsearch.Airports.entities.Airport;
 import com.amadeus.flightsearch.Airports.services.AirportService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/airport")
+@RequestMapping("/airports")
 @AllArgsConstructor
 public class AirportController {
 
@@ -28,15 +39,54 @@ public class AirportController {
         this.airportService.createAirport(createAirportDto.city());
     }
 
-    @Operation(summary = "Delelte a airport")
+    @Operation(summary = "Delete a airport by Id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Airport deleted"),
-            @ApiResponse(responseCode = "404", description = "Airport not found")
+            @ApiResponse(responseCode = "200", description = "Airport deleted"),
+            @ApiResponse(responseCode = "404", description = "Airport not found", content = @Content(schema = @Schema(implementation = Void.class)))
 
     })
     @DeleteMapping("")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void deleteAirport(@Valid @RequestBody DeleteAirportDto deleteAirportDto){
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAirport(@Valid @RequestBody DeleteAirportDto deleteAirportDto) {
         this.airportService.deleteAirport(deleteAirportDto.id());
     }
+
+    @Operation(summary = "Update airport name by Id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Airport updated"),
+            @ApiResponse(responseCode = "404", description = "Airport not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
+    @PutMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateAirport(@Valid @RequestBody UpdateAirportDto updateAirportDto) {
+        this.airportService.updateAirport(updateAirportDto);
+    }
+
+    @Operation(summary = "Query airports")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = Void.class)))
+    })
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Airport> getAirportsByCity(@RequestParam Optional<String> city, @RequestParam Optional<UUID> id){
+        if(city.isPresent() && id.isPresent()){
+            List<Airport> airports = new ArrayList<>();
+            airports.add(this.airportService.findAirportById(id.get()));
+            return airports;
+        }
+
+       if(city.isPresent()){
+           return this.airportService.findAllAirportsByCity(city.get());
+       }
+
+       if(id.isPresent()){
+           List<Airport> airports = new ArrayList<>();
+           airports.add(this.airportService.findAirportById(id.get()));
+           return airports;
+       }
+
+       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request");
+    }
+
 }

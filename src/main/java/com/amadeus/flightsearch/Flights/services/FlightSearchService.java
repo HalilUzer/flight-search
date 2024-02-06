@@ -3,11 +3,11 @@ package com.amadeus.flightsearch.Flights.services;
 import com.amadeus.flightsearch.Airports.entities.Airport;
 import com.amadeus.flightsearch.Airports.services.AirportService;
 import com.amadeus.flightsearch.Flights.Repositories.FlightRepository;
-import com.amadeus.flightsearch.Flights.dtos.FlightSearchDto;
-import com.amadeus.flightsearch.Flights.dtos.TwoWayFlights;
 import com.amadeus.flightsearch.Flights.entities.Flight;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,56 +20,95 @@ public class FlightSearchService {
     private final FlightRepository flightRepository;
     private final AirportService airportService;
 
-    public TwoWayFlights searchTwoWayFlights(FlightSearchDto flightSearchDto) {
-        List<Airport> arrivalAirports = airportService.findAllAirportsByCity(flightSearchDto.arrivalCity());
-        List<Airport> departureAirports = airportService.findAllAirportsByCity(flightSearchDto.departureCity());
+    public List<Flight> searchTwoWayFlights(String arrivalCity, String departureCity, LocalDateTime returnTime, LocalDateTime departureTime) {
+        List<Airport> arrivalAirports = airportService.findAllAirportsByCity(arrivalCity);
+        List<Airport> departureAirports = airportService.findAllAirportsByCity(departureCity);
 
         List<Flight> outboundFlights = new ArrayList<>();
         List<Flight> inboundFlights = new ArrayList<>();
 
-        outboundFlights.addAll(findFlightsByArrivalAirportsAndDepartureAirports(arrivalAirports, departureAirports));
-        inboundFlights.addAll(findFlightsByArrivalAirportsAndDepartureAirports(departureAirports, arrivalAirports));
+        outboundFlights.addAll(findFlightsByArrivalAndDepartureAirports(arrivalAirports, departureAirports));
+        inboundFlights.addAll(findFlightsByArrivalAndDepartureAirports(departureAirports, arrivalAirports));
 
 
         List<Flight> outboundFlightsInTime = this.findFlightsInTime(
-                outboundFlights, flightSearchDto.departureTime());
+                outboundFlights, departureTime);
         List<Flight> inboundFlightsInTime = this.findFlightsInTime(
-                inboundFlights, flightSearchDto.returnTime()
+                inboundFlights, returnTime
         );
 
-        TwoWayFlights twoWayFlights = new TwoWayFlights(outboundFlightsInTime, inboundFlightsInTime);
+        if(outboundFlightsInTime.isEmpty() || inboundFlightsInTime.isEmpty()){
+            return new ArrayList<>();
+        }
 
-        return twoWayFlights;
+        Flight outboundFlightInTimeWithLowestPrice = this.findFlightWithLowestPrice(outboundFlightsInTime);
+        Flight inboundFlightInTimeWithLowestPrice = this.findFlightWithLowestPrice(inboundFlightsInTime);
+        List<Flight> flights = new ArrayList<>();
+        flights.add(outboundFlightInTimeWithLowestPrice);
+        flights.add(inboundFlightInTimeWithLowestPrice);
+
+        return flights;
     }
 
 
-    private List<Flight> findFlightsByArrivalAirportAndAndDepartureAirport(Airport arrivalAirport, Airport departureAirport) {
+    private Flight findFlightWithLowestPrice(List<Flight> flights){
+        int price = flights.get(0).getPrice();
+        Flight flightWithLowestPrice = flights.get(0);
+        for(Flight flight : flights){
+            if(price > flight.getPrice()){
+                price = flight.getPrice();
+                flightWithLowestPrice = flight;
+            }
+        }
+        return flightWithLowestPrice;
+    }
+
+    public List<Flight> searchOneWayFlight(String arrivalCity, String departureCity, LocalDateTime departureTime){
+        List<Flight> oneWayFlights = new ArrayList<>();
+        oneWayFlights.addAll(this.findFlightsByArrivalAndDepartureCity(arrivalCity, departureCity));
+        oneWayFlights = this.findFlightsInTime(oneWayFlights, departureTime);
+        if(oneWayFlights.isEmpty()){
+            return new ArrayList<>();
+        }
+        List<Flight> oneWayFlightWithLowestPrice = new ArrayList<>();
+        oneWayFlightWithLowestPrice.add(this.findFlightWithLowestPrice(oneWayFlights));
+        return oneWayFlightWithLowestPrice;
+    }
+
+
+    private List<Flight> findFlightsByArrivalAndAndDepartureAirport(Airport arrivalAirport, Airport departureAirport) {
         List<Flight> emptyList = new ArrayList<>();
         return this.flightRepository
                 .findFlightsByArrivalAirportAndAndDepartureAirport(arrivalAirport, departureAirport).orElse(emptyList);
     }
 
 
-    private List<Flight> findFlightsByArrivalAirportsAndDepartureAirports(List<Airport> arrivalAirports, List<Airport> departureAirports) {
+    public List<Flight> findFlightsByArrivalAndDepartureAirports(List<Airport> arrivalAirports,
+                                                                 List<Airport> departureAirports) {
         List<Flight> flights = new ArrayList<>();
         for (Airport arrivalAirport : arrivalAirports) {
             for (Airport departureAirport : departureAirports) {
-                flights.addAll(this.findFlightsByArrivalAirportAndAndDepartureAirport(arrivalAirport, departureAirport));
+                flights.addAll(this.findFlightsByArrivalAndAndDepartureAirport(arrivalAirport, departureAirport));
             }
         }
         return flights;
     }
 
-    private List<Flight> findFlightsInTime(List<Flight> flights, LocalDateTime time) {
+    public List<Flight> findFlightsByArrivalAndDepartureCity(String arrivalCity, String departureCity) {
+        List<Airport> arrivalAirports = this.airportService.findAllAirportsByCity(arrivalCity);
+        List<Airport> departureAirports = this.airportService.findAllAirportsByCity(departureCity);
+        return this.findFlightsByArrivalAndDepartureAirports(arrivalAirports, departureAirports);
+    }
+
+    public List<Flight> findFlightsInTime(List<Flight> flights, LocalDateTime time) {
         List<Flight> flightsInTime = new ArrayList<>();
 
         for (Flight flight : flights) {
-            if (flight.getDepartureTime().isBefore(time)) {
+            if (flight.getDepartureTime().isBefore(time) && flight.getDepartureTime().plusDays(1).isAfter(time)) {
                 flightsInTime.add(flight);
             }
         }
         return flightsInTime;
     }
-
 
 }
