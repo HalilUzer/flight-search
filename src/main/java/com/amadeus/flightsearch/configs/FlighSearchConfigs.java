@@ -6,10 +6,14 @@ import org.springframework.web.client.RestTemplate;
 
 
 @Configuration
-public class FlighSearchConfig {
+public class FlighSearchConfigs {
     @Bean
     public String getParserPattern(){
         return "yyyy-MM-dd HH:mm";
     }
 
+    @Bean
+    public RestTemplate getRestTemplate(){
+        return new RestTemplate();
+    }
 }

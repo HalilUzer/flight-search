@@ -2,12 +2,10 @@ package com.amadeus.flightsearch.Flights.services;
 
 import com.amadeus.flightsearch.Airports.entities.Airport;
 import com.amadeus.flightsearch.Airports.services.AirportService;
-import com.amadeus.flightsearch.Flights.Repositories.FlightRepository;
+import com.amadeus.flightsearch.Flights.repositories.FlightRepository;
 import com.amadeus.flightsearch.Flights.entities.Flight;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,11 +1,8 @@
-package com.amadeus.flightsearch.Flights.Repositories;
+package com.amadeus.flightsearch.Flights.repositories;
 
 import com.amadeus.flightsearch.Airports.entities.Airport;
 import com.amadeus.flightsearch.Flights.entities.Flight;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;

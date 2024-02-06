@@ -2,7 +2,7 @@ package com.amadeus.flightsearch.Flights.services;
 
 import com.amadeus.flightsearch.Airports.Repositories.AirportRepository;
 import com.amadeus.flightsearch.Airports.entities.Airport;
-import com.amadeus.flightsearch.Flights.Repositories.FlightRepository;
+import com.amadeus.flightsearch.Flights.repositories.FlightRepository;
 import com.amadeus.flightsearch.Flights.dtos.CreateFlightDto;
 import com.amadeus.flightsearch.Flights.dtos.DeleteFlightDto;
 import com.amadeus.flightsearch.Flights.entities.Flight;
