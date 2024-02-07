@@ -2,7 +2,7 @@ package com.amadeus.flightsearch.Flights.controllers;
 
 
 import com.amadeus.flightsearch.Flights.dtos.CreateFlightDto;
-import com.amadeus.flightsearch.Flights.dtos.DeleteFlightDto;
+import com.amadeus.flightsearch.Flights.dtos.UpdateFlightDto;
 import com.amadeus.flightsearch.Flights.entities.Flight;
 import com.amadeus.flightsearch.Flights.services.FlightSearchService;
 import com.amadeus.flightsearch.Flights.services.FlightService;
@@ -39,9 +39,14 @@ public class FlightController {
     @Operation(summary = "Create a flight")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Flight created successfully"),
-            @ApiResponse(responseCode = "404", description = "Arrival airport does not exists", content = @Content(schema = @Schema(implementation = Void.class))),
-            @ApiResponse(responseCode = "404", description = "Departure airport does not exits", content = @Content(schema = @Schema(implementation = Void.class))),
-            @ApiResponse(responseCode = "400", description = "Arrival time is before departure time",content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", description = "Arrival airport does not exists",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "404", description = "Departure airport does not exits",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "400", description = "Arrival time is before departure time",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content =
+            @Content(schema = @Schema(implementation = Void.class)))
     })
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,42 +55,35 @@ public class FlightController {
     }
 
 
-    @Operation(summary = "Delete a flight")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Flight deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Flight does not exits", content = @Content(schema = @Schema(implementation = Void.class)))
-    })
-    @PutMapping("")
-    public void deleteFlight(@Valid @RequestBody DeleteFlightDto deleteFlightDto){
-        this.flightService.deleteFlight(deleteFlightDto);
-    }
-
-
     @Operation(summary = "Query flights")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "400", description = "Invalid datetime format", content = @Content(schema = @Schema(implementation = Void.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "400", description = "Invalid datetime format",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = Void.class)))
     })
 
     @GetMapping("")
     public List<Flight> getFlight(@RequestParam Optional<UUID> id,
                                   @RequestParam Optional<String> arrivalCity,
                                   @RequestParam Optional<String> departureCity,
-                                  @RequestParam Optional<String> departureTime){
+                                  @RequestParam Optional<String> departureTime) {
 
-        if(id.isPresent()){
+        if (id.isPresent()) {
             List<Flight> flights = new ArrayList<>();
             flights.add(this.flightService.findFlightById(id.get()));
             return flights;
         }
 
-        if(departureTime.isPresent() && arrivalCity.isPresent() && departureCity.isPresent()){
+        if (departureTime.isPresent() && arrivalCity.isPresent() && departureCity.isPresent()) {
             LocalDateTime localDepartureTime;
-            try{
-                localDepartureTime = LocalDateTime.parse(departureTime.get(), DateTimeFormatter.ofPattern(parserPattern));
-            }
-            catch (DateTimeParseException exp){
+            try {
+                localDepartureTime = LocalDateTime.parse(departureTime.get(),
+                        DateTimeFormatter.ofPattern(parserPattern));
+            } catch (DateTimeParseException exp) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid datetime format");
             }
             List<Flight> flights = new ArrayList<>();
@@ -95,7 +93,7 @@ public class FlightController {
             return flights;
         }
 
-        if(arrivalCity.isPresent() && departureCity.isPresent()){
+        if (arrivalCity.isPresent() && departureCity.isPresent()) {
             List<Flight> flights = new ArrayList<>();
             flights.addAll(this.flightSearchService.findFlightsByArrivalAndDepartureCity(arrivalCity.get(),
                     departureCity.get()));
@@ -106,9 +104,29 @@ public class FlightController {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request");
     }
 
-    @GetMapping("/thirdParty")
-    public void thirdParty(){
 
+    @Operation(summary = "Update flight")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "404", description = "Flight not found"),
+            @ApiResponse(responseCode = "404", description = "Arrival airport not found",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "404", description = "Departure airport not found",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    @PutMapping("")
+    void updateFlight(@Valid @RequestBody UpdateFlightDto updateFlightDto) {
+        this.flightService.updateFlight(updateFlightDto);
+    }
 
+    @Operation(summary = "Delete a flight")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Flight deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Flight does not exits", content =
+            @Content(schema = @Schema(implementation = Void.class)))
+    })
+    @DeleteMapping("/{id}")
+    public void deleteFlight(@PathVariable UUID id) {
+        this.flightService.deleteFlight(id);
     }
 }

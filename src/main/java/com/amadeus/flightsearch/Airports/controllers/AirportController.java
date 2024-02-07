@@ -1,8 +1,6 @@
 package com.amadeus.flightsearch.Airports.controllers;
 
 import com.amadeus.flightsearch.Airports.dtos.CreateAirportDto;
-import com.amadeus.flightsearch.Airports.dtos.DeleteAirportDto;
-import com.amadeus.flightsearch.Airports.dtos.GetAirportsByCityDto;
 import com.amadeus.flightsearch.Airports.dtos.UpdateAirportDto;
 import com.amadeus.flightsearch.Airports.entities.Airport;
 import com.amadeus.flightsearch.Airports.services.AirportService;
@@ -32,6 +30,8 @@ public class AirportController {
     @Operation(summary = "Create a airport")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Airport created"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = Void.class)))
     })
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
@@ -42,19 +42,26 @@ public class AirportController {
     @Operation(summary = "Delete a airport by Id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Airport deleted"),
-            @ApiResponse(responseCode = "404", description = "Airport not found", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", description = "Airport not found",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = Void.class)))
 
     })
-    @DeleteMapping("")
+
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteAirport(@Valid @RequestBody DeleteAirportDto deleteAirportDto) {
-        this.airportService.deleteAirport(deleteAirportDto.id());
+    public void deleteAirport(@PathVariable UUID id) {
+        this.airportService.deleteAirport(id);
     }
 
     @Operation(summary = "Update airport name by Id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Airport updated"),
-            @ApiResponse(responseCode = "404", description = "Airport not found", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "404", description = "Airport not found",
+                    content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = Void.class)))
     })
     @PutMapping("")
     @ResponseStatus(HttpStatus.OK)
@@ -65,7 +72,8 @@ public class AirportController {
     @Operation(summary = "Query airports")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = Void.class)))
+            @ApiResponse(responseCode = "400", description = "Invalid request",
+                    content = @Content(schema = @Schema(implementation = Void.class)))
     })
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
