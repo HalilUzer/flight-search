@@ -1,4 +1,4 @@
-package com.amadeus.flightsearch.Airports.Repositories;
+package com.amadeus.flightsearch.Airports.repositories;
 
 import com.amadeus.flightsearch.Airports.entities.Airport;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -18,7 +18,7 @@ public class FlightSearchService {
     private final FlightRepository flightRepository;
     private final AirportService airportService;
 
-    public List<Flight> searchTwoWayFlights(String arrivalCity, String departureCity, LocalDateTime returnTime, LocalDateTime departureTime) {
+    public List<Flight> searchRoundTripFlights(String arrivalCity, String departureCity, LocalDateTime returnTime, LocalDateTime departureTime) {
         List<Airport> arrivalAirports = airportService.findAllAirportsByCity(arrivalCity);
         List<Airport> departureAirports = airportService.findAllAirportsByCity(departureCity);
 
@@ -27,7 +27,6 @@ public class FlightSearchService {
 
         outboundFlights.addAll(findFlightsByArrivalAndDepartureAirports(arrivalAirports, departureAirports));
         inboundFlights.addAll(findFlightsByArrivalAndDepartureAirports(departureAirports, arrivalAirports));
-
 
         List<Flight> outboundFlightsInTime = this.findFlightsInTime(
                 outboundFlights, departureTime);
@@ -102,7 +101,7 @@ public class FlightSearchService {
         List<Flight> flightsInTime = new ArrayList<>();
 
         for (Flight flight : flights) {
-            if (flight.getDepartureTime().isBefore(time) && flight.getDepartureTime().plusDays(1).isAfter(time)) {
+            if (flight.getDepartureTime().isAfter(time) && flight.getDepartureTime().isBefore(time.plusDays(1))) {
                 flightsInTime.add(flight);
             }
         }

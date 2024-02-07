@@ -3,19 +3,16 @@ package com.amadeus.flightsearch.Flights.controllers;
 import com.amadeus.flightsearch.Flights.entities.Flight;
 import com.amadeus.flightsearch.Flights.services.FlightSearchService;
 import com.amadeus.flightsearch.Flights.services.TimeService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +25,8 @@ public class FlightSearchController {
     private final TimeService timeService;
 
 
+
+    @Operation(summary = "Search one-way or round-trip flights with lowest price")
     @ApiResponses(
             @ApiResponse(responseCode = "200", description = "Success")
     )
@@ -40,7 +39,7 @@ public class FlightSearchController {
             LocalDateTime returnLocalDateTime = timeService.parseFrom(returnTime.get());
             LocalDateTime departureLocalDateTime = timeService.parseFrom(departureTime);
 
-            return this.flightSearchService.searchTwoWayFlights(arrivalCity,
+            return this.flightSearchService.searchRoundTripFlights(arrivalCity,
                     departureCity,
                     returnLocalDateTime,
                     departureLocalDateTime);

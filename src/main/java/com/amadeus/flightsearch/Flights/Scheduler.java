@@ -1,6 +1,6 @@
 package com.amadeus.flightsearch.Flights;
 
-import com.amadeus.flightsearch.Airports.Repositories.AirportRepository;
+import com.amadeus.flightsearch.Airports.repositories.AirportRepository;
 import com.amadeus.flightsearch.Flights.dtos.FlightDto;
 import com.amadeus.flightsearch.Flights.dtos.GetFlightsDto;
 import com.amadeus.flightsearch.Flights.entities.Flight;

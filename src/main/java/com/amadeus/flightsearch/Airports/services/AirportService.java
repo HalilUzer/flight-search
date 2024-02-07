@@ -1,7 +1,6 @@
 package com.amadeus.flightsearch.Airports.services;
 
-import com.amadeus.flightsearch.Airports.Repositories.AirportRepository;
-import com.amadeus.flightsearch.Airports.dtos.GetAirportsByCityDto;
+import com.amadeus.flightsearch.Airports.repositories.AirportRepository;
 import com.amadeus.flightsearch.Airports.dtos.UpdateAirportDto;
 import com.amadeus.flightsearch.Airports.entities.Airport;
 import jakarta.transaction.Transactional;
