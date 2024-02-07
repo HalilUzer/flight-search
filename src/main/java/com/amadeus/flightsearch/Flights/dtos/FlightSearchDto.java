@@ -1,6 +1,5 @@
 package com.amadeus.flightsearch.Flights.dtos;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

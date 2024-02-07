@@ -2,6 +2,7 @@ package com.amadeus.flightsearch.Flights.controllers;
 
 import com.amadeus.flightsearch.Flights.entities.Flight;
 import com.amadeus.flightsearch.Flights.services.FlightSearchService;
+import com.amadeus.flightsearch.Flights.services.TimeService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,8 @@ import java.util.Optional;
 public class FlightSearchController {
 
     private final FlightSearchService flightSearchService;
-    private final String parserPattern;
+    private final TimeService timeService;
+
 
     @ApiResponses(
             @ApiResponse(responseCode = "200", description = "Success")
@@ -35,25 +37,15 @@ public class FlightSearchController {
                                @RequestParam String departureTime,
                                @RequestParam Optional<String> returnTime) {
         if (returnTime.isPresent()) {
-            LocalDateTime returnLocalDateTime;
-            LocalDateTime departureLocalDateTime;
-            try {
-                returnLocalDateTime = LocalDateTime.parse(returnTime.get(),
-                        DateTimeFormatter.ofPattern(parserPattern));
-                departureLocalDateTime = LocalDateTime.parse(departureTime,
-                        DateTimeFormatter.ofPattern(parserPattern));
-
-            } catch (DateTimeParseException exp) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid datetime format");
-            }
+            LocalDateTime returnLocalDateTime = timeService.parseFrom(returnTime.get());
+            LocalDateTime departureLocalDateTime = timeService.parseFrom(departureTime);
 
             return this.flightSearchService.searchTwoWayFlights(arrivalCity,
                     departureCity,
                     returnLocalDateTime,
                     departureLocalDateTime);
         } else {
-            LocalDateTime departureLocalDateTime = LocalDateTime.parse(departureTime,
-                    DateTimeFormatter.ofPattern(parserPattern));
+            LocalDateTime departureLocalDateTime = timeService.parseFrom(departureTime);
             return this.flightSearchService.searchOneWayFlight(arrivalCity, departureCity, departureLocalDateTime);
         }
     }
