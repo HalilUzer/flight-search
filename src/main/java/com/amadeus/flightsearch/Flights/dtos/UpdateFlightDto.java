@@ -14,10 +14,8 @@ public record UpdateFlightDto(
         Optional<UUID> departureAirportId,
         Optional<UUID> arrivalAirportId,
         @Future
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         Optional<LocalDateTime> departureTime,
         @Future
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         Optional<LocalDateTime> arrivalTime,
         Optional<Integer> price
 ){}

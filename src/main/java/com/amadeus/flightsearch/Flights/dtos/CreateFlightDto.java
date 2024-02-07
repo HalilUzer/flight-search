@@ -18,12 +18,10 @@ public record CreateFlightDto(
 
         @NotNull
         @Future
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime departureTime,
 
         @NotNull
         @Future
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime arrivalTime,
 
         @NotNull

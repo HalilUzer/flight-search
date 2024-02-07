@@ -8,10 +8,13 @@ import com.amadeus.flightsearch.Flights.dtos.CreateFlightDto;
 import com.amadeus.flightsearch.Flights.entities.Flight;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
@@ -78,6 +81,5 @@ public class FlightService {
             flight.setPrice(updateFlightDto.price().get());
         }
     }
-
 
 }

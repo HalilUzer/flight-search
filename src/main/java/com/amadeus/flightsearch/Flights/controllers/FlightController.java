@@ -6,6 +6,7 @@ import com.amadeus.flightsearch.Flights.dtos.UpdateFlightDto;
 import com.amadeus.flightsearch.Flights.entities.Flight;
 import com.amadeus.flightsearch.Flights.services.FlightSearchService;
 import com.amadeus.flightsearch.Flights.services.FlightService;
+import com.amadeus.flightsearch.Flights.services.TimeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,13 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class FlightController {
 
     private final FlightService flightService;
     private final FlightSearchService flightSearchService;
-    private final String parserPattern;
+    private final TimeService timeService;
 
 
     @Operation(summary = "Create a flight")
@@ -79,13 +80,7 @@ public class FlightController {
         }
 
         if (departureTime.isPresent() && arrivalCity.isPresent() && departureCity.isPresent()) {
-            LocalDateTime localDepartureTime;
-            try {
-                localDepartureTime = LocalDateTime.parse(departureTime.get(),
-                        DateTimeFormatter.ofPattern(parserPattern));
-            } catch (DateTimeParseException exp) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid datetime format");
-            }
+            LocalDateTime localDepartureTime = timeService.parseFrom(departureTime.get());
             List<Flight> flights = new ArrayList<>();
             flights.addAll(this.flightSearchService.findFlightsByArrivalAndDepartureCity(arrivalCity.get(),
                     departureCity.get()));

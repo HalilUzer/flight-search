@@ -9,12 +9,10 @@ import java.time.LocalDateTime;
 
 public record FlightSearchDto(
         @Future
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime returnTime,
 
         @NotNull
         @Future
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime departureTime,
         @NotNull
         @NotEmpty
